@@ -81,3 +81,54 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
+
+# Helper functions
+def preprocess_data(df):
+    """Preprocess the input data for model prediction."""
+    # This function should be customized based on your specific preprocessing needs
+    # Example: Basic preprocessing
+    X = df.iloc[:, :-1].sample(n=100,replace = True)  # All columns except the last one (assuming last column is target)
+    y = df.iloc[:, -1].sample(n=100,replace = True)  # Last column as target
+    
+    # Scale features
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+    
+    return X_scaled, y
+
+def get_model_predictions(X, models):
+    """Get predictions from all loaded models."""
+    predictions = {}
+    for name, model in models.items():
+        predictions[name] = model.predict(X)
+    return predictions
+
+def plot_confusion_matrix(y_true, y_pred, model_name):
+    """Generate and plot confusion matrix."""
+    cm = confusion_matrix(y_true, y_pred)
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', cbar=False)
+    plt.title(f'Confusion Matrix - {model_name}', fontsize=14)
+    plt.ylabel('True Label', fontsize=12)
+    plt.xlabel('Predicted Label', fontsize=12)
+    plt.tight_layout()
+    
+    # Convert plot to image
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    buf.seek(0)
+    plt.close()
+    return buf
+
+def get_download_link(buf, filename):
+    """Generate a download link for the plot."""
+    b64 = base64.b64encode(buf.getvalue()).decode()
+    return f'<a href="data:image/png;base64,{b64}" download="{filename}.png">Download {filename} Plot</a>'
+
+def calculate_metrics(y_true, y_pred):
+    """Calculate model performance metrics."""
+    acc = accuracy_score(y_true, y_pred)
+    # Add more metrics as needed
+    return {
+        'accuracy': acc
+    }
