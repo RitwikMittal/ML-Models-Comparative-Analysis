@@ -444,3 +444,24 @@ def main():
             st.warning("Please upload a dataset before running the analysis.")
         if not models_ready:
             st.warning("Please upload at least one model before running the analysis.")
+    # Instructions section
+    with st.expander("How to Use This Dashboard"):
+        st.markdown("""
+        ### Instructions
+        
+        1. **Upload your models**: Use the sidebar to upload your trained ML models (.pkl or .joblib files)
+        2. **Upload your dataset**: Upload a CSV or TXT file containing your test data
+        3. **Configure parsing options**: Set delimiter and header options as needed
+        4. **Run comparison**: Click the "Run Comparison Analysis" button to process the data
+        5. **Explore results**: View performance metrics, confusion matrices, and detailed comparisons
+        
+        ### Notes
+        
+        - Your dataset should be preprocessed the same way as your training data
+        - The last column in your dataset is assumed to be the target variable
+        - You can upload 1-3 models for comparison
+        """)
+    
+    # Footer
+    st.markdown('<div class="footer">Made by Ritwik Mittal & Yashas Raina<b><b></div>', 
+                unsafe_allow_html=True)
