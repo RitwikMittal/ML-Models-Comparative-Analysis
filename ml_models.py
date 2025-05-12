@@ -142,3 +142,37 @@ plt.show()
 
 joblib.dump(rf_clf,'rf_parkinson.pkl')
 
+## SUPPORT VECTOR MACHINE
+
+from sklearn import svm
+clf_svc = svm.SVC()
+clf_svc.fit(xtrain,ytrain)
+
+y_pred_svc = clf_svc.predict(xtest)
+
+accuracy_svc =  accuracy_score(ytest,y_pred_svc)
+print("Accuracy of SVC MODEL = ",accuracy_svc)
+
+target_names = ['class 0', 'class 1']
+report = classification_report(ytest, y_pred_svc, target_names=target_names)
+print(report)
+
+train_accuracy = accuracy_score(ytrain, clf_svc.predict(xtrain))
+test_accuracy = accuracy_score(ytest, clf_svc.predict(xtest))
+
+print(f"Training Accuracy: {train_accuracy:.4f}")
+print(f"Test Accuracy: {test_accuracy:.4f}")
+
+cv_scores = cross_val_score(clf_svc, xtrain, ytrain, cv=5)
+print(f"Cross-Validation Scores: {cv_scores}")
+print(f"Average CV Score: {cv_scores.mean()}")
+
+#confusion Matrix
+cm_knn = confusion_matrix(y_pred_svc,ytrain)
+plt.figure(figsize=(5,5))
+sns.heatmap(cm_knn,annot=True,cbar=False,cmap='crest',linewidth=2)
+plt.show()
+
+#save the model
+
+joblib.dump(clf_svc,'SVM_parkinson.pkl')
