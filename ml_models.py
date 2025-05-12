@@ -76,3 +76,69 @@ plt.show()
 
 joblib.dump(knn,'knn_parkinson.pkl')
 
+
+## RANDOM FOREST
+
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.datasets import make_classification
+from sklearn.model_selection import cross_val_score
+
+count = 0
+rnf_accuracy = 0
+best_n_estima = 100
+best_maxdepth = 1
+best_randomstate = 0
+
+clf = RandomForestClassifier(criterion = "entropy")
+clf.fit(xtrain,ytrain)
+ypred_randomforest = clf.predict(xtest)
+target_names = ['class 0', 'class 1']
+report = classification_report(ytest, ypred_randomforest, target_names=target_names)
+print(report)
+# RandomForestClassifier(...)
+
+param_grid = { 
+    'n_estimators': range(100,300,25),
+    'max_features': ['auto', 'sqrt', 'log2'],
+    'max_depth' :range(1,10),
+    'random_state':range(100,250,50),
+    'criterion' :['gini', 'entropy']
+}
+CV_rfc = GridSearchCV(estimator=clf, param_grid=param_grid, cv= 5)
+CV_rfc.fit(xtrain,ytrain)
+CV_rfc.best_params_
+
+rf_clf = RandomForestClassifier(criterion='entropy',
+ max_depth= 15,
+ max_features= 'log2',
+ n_estimators= 100,
+ random_state= 150)
+rf_clf.fit(xtrain,ytrain)
+ypred_randomforest = rf_clf.predict(xtest)
+accuracy = accuracy_score(ytest,ypred_randomforest)
+print("Accuracy for Random Forest =",accuracy)
+
+target_names = ['class 0', 'class 1']
+report = classification_report(ytest, ypred_randomforest, target_names=target_names)
+print(report)
+
+train_accuracy = accuracy_score(ytrain, rf_clf.predict(xtrain))
+test_accuracy = accuracy_score(ytest, rf_clf.predict(xtest))
+
+print(f"Training Accuracy: {train_accuracy:.4f}")
+print(f"Test Accuracy: {test_accuracy:.4f}")
+
+cv_scores = cross_val_score(rf_clf, xtrain, ytrain, cv=5)
+print(f"Cross-Validation Scores: {cv_scores}")
+print(f"Average CV Score: {cv_scores.mean()}")
+
+#confusion Matrix
+cm_knn = confusion_matrix(ypred_randomforest,ytrain)
+plt.figure(figsize=(5,5))
+sns.heatmap(cm_knn,annot=True,cbar=False,cmap='crest',linewidth=2)
+plt.show()
+
+#save the model
+
+joblib.dump(rf_clf,'rf_parkinson.pkl')
+
